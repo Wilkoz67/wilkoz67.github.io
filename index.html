@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dla najpiękniejszej Kingi 💖</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dla Kingi 💖</title>
 
   <style>
     body {
       margin: 0;
-      height: 100vh;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       background: linear-gradient(135deg, #ff9a9e, #fad0c4);
       font-family: Arial, sans-serif;
-      transition: background 0.6s ease;
+      transition: background 0.5s ease;
     }
 
     .card {
       background: white;
-      padding: 30px 20px;
+      padding: 25px 20px;
       border-radius: 20px;
       text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
       width: 90%;
-      max-width: 360px;
+      max-width: 420px;
     }
 
     h1 {
       color: #ff4d6d;
+      font-size: 22px;
       margin-bottom: 15px;
-      font-size: 24px;
     }
 
     p {
@@ -39,142 +39,197 @@
     }
 
     button {
-      padding: 14px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 30px;
-      cursor: pointer;
-      margin: 8px 0;
       width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      font-size: 16px;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
     }
 
-    #yes {
-      background: #ff4d6d;
-      color: white;
-    }
+    .yes { background:#ff4d6d; color:white; }
+    .no  { background:#ddd; }
 
-    #no {
-      background: #ddd;
+    .option { background:#f2f2f2; }
+    .option.correct { background:#4caf50; color:white; }
+    .option.wrong { background:#e53935; color:white; }
+
+    .next {
+      background:#667eea;
+      color:white;
+      margin-top:15px;
     }
   </style>
 </head>
+
 <body>
 
-<div class="card" id="start">
-  <h1>💖 Dla najpiękniejszej Kingi 💖</h1>
-  <p>Uśmiechniesz się dziś razem ze mną? 🙂</p>
-  <button id="yes">TAK 💕</button>
-  <button id="no">NIE 😄</button>
-</div>
+<div class="card" id="app"></div>
 
 <script>
-  /* ------------------ START SCREEN ------------------ */
-  const yesBtn = document.getElementById("yes");
-  const noBtn = document.getElementById("no");
+/* ---------------- START SCREEN ---------------- */
 
-  function moveNoButton() {
-    const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-    const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-    noBtn.style.position = "fixed";
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
+const app = document.getElementById("app");
+
+function startScreen() {
+  app.innerHTML = `
+    <h1>💖 Dla najpiękniejszej Kingi 💖</h1>
+    <p>Uśmiechniesz się dziś razem ze mną? 🙂</p>
+    <button class="yes" id="yes">TAK 💕</button>
+    <button class="no" id="no">NIE 😄</button>
+  `;
+
+  const yes = document.getElementById("yes");
+  const no  = document.getElementById("no");
+
+  function moveNo() {
+    no.style.position = "fixed";
+    no.style.left = Math.random() * (window.innerWidth - no.offsetWidth) + "px";
+    no.style.top  = Math.random() * (window.innerHeight - no.offsetHeight) + "px";
   }
 
-  noBtn.addEventListener("mouseover", moveNoButton);
-  noBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    moveNoButton();
+  no.addEventListener("mouseover", moveNo);
+  no.addEventListener("touchstart", e => { e.preventDefault(); moveNo(); });
+
+  yes.onclick = startQuiz;
+}
+
+/* ---------------- QUIZ DATA ---------------- */
+
+const quiz = [
+  {
+    q: "Którego dnia się poznaliśmy? 💭",
+    options: ["27 listopada", "28 listopada"],
+    correct: [0]
+  },
+  {
+    q: "Jaka była Twoja pierwsza fraza w moim Mercedesie? 🚗",
+    options: ["Patrz, jakie ładne buty", "Ja sprawdzam", "Jedź szybciej"],
+    correct: [1]
+  },
+  {
+    q: "W który policzek Cię pocałowałem? 💋",
+    options: ["Prawy", "Lewy"],
+    correct: [1]
+  },
+  {
+    q: "Z jakiej mojej frazy śmiałaś się do łez? 😂",
+    options: [
+      "Ja zadbałbym za Wami chodzić",
+      "Zapomniałem gdzie stoi samochód",
+      "U mnie co, uszy brudne?"
+    ],
+    correct: [2]
+  },
+  {
+    q: "Gdzie najbardziej chcieliśmy pojechać? ✈️",
+    options: ["Białystok", "Mińsk", "Kijów", "Warszawa"],
+    correct: [1]
+  },
+  {
+    q: "Jaka jest Twoja ulubiona fraza do mnie? 😄",
+    options: ["Złotek", "Debil", "Halo"],
+    correct: [1]
+  },
+  {
+    q: "Co powiedziałaś, gdy poznałaś mój znak zodiaku? ♌",
+    options: ["Afigienno", "Prikolno", "Najważniejsze, że nie Lew", "Nic"],
+    correct: [2]
+  },
+  {
+    q: "Co najbardziej Ci się we mnie podoba? 😏 (zaznacz wszystko)",
+    options: ["Figura", "Twarz", "Oczy", "Humor"],
+    correct: [0,1,2,3],
+    multi: true
+  },
+  {
+    q: "Jaka cecha charakteru podoba mi się w Tobie najbardziej? 💖",
+    options: ["Energiczność", "Śmiałość", "Wytrwałość", "Szacunek"],
+    correct: [3]
+  },
+  {
+    q: "Spontaniczny wyjazd czy zaplanowany? 🌍",
+    options: ["Spontaniczny", "Zaplanowany"],
+    correct: [] // просто выбор
+  }
+];
+
+let index = 0;
+let selected = [];
+
+/* ---------------- QUIZ LOGIC ---------------- */
+
+function startQuiz() {
+  document.body.style.background =
+    "linear-gradient(135deg,#667eea,#764ba2)";
+  index = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  selected = [];
+  const q = quiz[index];
+
+  let html = `<p>${q.q}</p>`;
+  q.options.forEach((opt,i)=>{
+    html += `<button class="option" data-i="${i}">${opt}</button>`;
   });
 
-  yesBtn.onclick = startGame;
+  app.innerHTML = html;
 
-  /* ------------------ GAME ------------------ */
+  document.querySelectorAll(".option").forEach(btn=>{
+    btn.onclick = () => selectOption(btn);
+  });
+}
 
-  function startGame() {
-    document.body.innerHTML = `
-      <div class="card">
-        <p id="question"></p>
-        <button id="yes"></button>
-        <button id="no"></button>
-      </div>
-    `;
+function selectOption(btn) {
+  const q = quiz[index];
+  const i = Number(btn.dataset.i);
 
-    const questions = [
-      { q:"Kawa czy herbata? ☕🍵", a:"Kawa ☕", b:"Herbata 🍵", vibe:"light" },
-      { q:"Spontaniczny wypad czy wszystko zaplanowane? 🚗🗺️", a:"Spontanicznie 🚗", b:"Z planem 🗺️", vibe:"light" },
-      { q:"Miasto nocą czy natura bez ludzi? 🌃🌲", a:"Miasto 🌃", b:"Natura 🌲", vibe:"light" },
-      { q:"Śmiech do łez czy rozmowy do rana? 😄🌙", a:"Śmiech 😄", b:"Rozmowy 🌙", vibe:"light" },
+  if(q.multi){
+    btn.classList.toggle("correct");
+    selected.includes(i) ? selected.splice(selected.indexOf(i),1) : selected.push(i);
+  } else {
+    checkAnswer([i]);
+  }
 
-      { q:"Gdyby teraz można było pojechać gdziekolwiek — gdzie byś wybrała? ✈️", a:"Daleko ✈️", b:"Blisko 🌍", vibe:"adventure" },
-      { q:"Podróż bez planu czy z celem? 🧭", a:"Bez planu 🧭", b:"Z celem 🎯", vibe:"adventure" },
-      { q:"Europa czy byle daleko? 😏", a:"Europa 🇪🇺", b:"Byle daleko 😏", vibe:"adventure" },
-
-      { q:"Serce czy rozum? ❤️🧠", a:"Serce ❤️", b:"Rozum 🧠", vibe:"mind" },
-      { q:"Cisza czy rozmowy bez końca? 🤍🗨️", a:"Cisza 🤍", b:"Rozmowy 🗨️", vibe:"mind" },
-
-      { q:"Drobne gesty czy wielkie niespodzianki? ✨🎁", a:"Gesty ✨", b:"Niespodzianki 🎁", vibe:"flirt" }
-    ];
-
-    const vibeScore = { light:0, adventure:0, mind:0, flirt:0 };
-    const gradients = {
-      light:"linear-gradient(135deg,#ff9a9e,#fad0c4)",
-      adventure:"linear-gradient(135deg,#667eea,#764ba2)",
-      mind:"linear-gradient(135deg,#43cea2,#185a9d)",
-      flirt:"linear-gradient(135deg,#ff758c,#ff7eb3)"
-    };
-
-    let current = 0;
-    const qEl = document.getElementById("question");
-    const y = document.getElementById("yes");
-    const n = document.getElementById("no");
-
-    function render() {
-      const q = questions[current];
-      qEl.textContent = q.q;
-      y.textContent = q.a;
-      n.textContent = q.b;
-      document.body.style.background = gradients[q.vibe];
-    }
-
-    function next() {
-      vibeScore[questions[current].vibe]++;
-      current++;
-      current < questions.length ? render() : finish();
-    }
-
-    y.onclick = next;
-    n.onclick = next;
-
-    render();
-
-    function finish() {
-      const final = Object.keys(vibeScore)
-        .reduce((a,b)=>vibeScore[a]>vibeScore[b]?a:b);
-
-      const texts = {
-        light:"Lekka, ciepła energia ☀️<br>Z Tobą wszystko jest proste",
-        adventure:"Dusza przygody ✈️<br>Zawsze gotowa na nowe drogi",
-        mind:"Spokój i głębia 🌊<br>Masz w sobie harmonię",
-        flirt:"Naturalny urok ✨<br>Twój uśmiech mówi wszystko"
-      };
-
-      document.body.innerHTML = `
-        <div style="
-          color:white;
-          text-align:center;
-          font-size:24px;
-          padding:20px;
-        ">
-          ✨ Twój vibe ✨<br><br>
-          ${texts[final]}
-        </div>
-      `;
-      document.body.style.background = gradients[final];
+  if(q.multi){
+    if(selected.length === q.correct.length){
+      checkAnswer(selected);
     }
   }
+}
+
+function checkAnswer(ans){
+  const q = quiz[index];
+  document.querySelectorAll(".option").forEach((b,i)=>{
+    if(q.correct.includes(i)) b.classList.add("correct");
+    else if(ans.includes(i)) b.classList.add("wrong");
+    b.disabled = true;
+  });
+
+  app.innerHTML += `<button class="next" onclick="next()">Dalej ➡️</button>`;
+}
+
+function next(){
+  index++;
+  if(index < quiz.length) renderQuestion();
+  else finish();
+}
+
+function finish(){
+  app.innerHTML = `
+    <h1>✨ Koniec ✨</h1>
+    <p>Mała podróż przez nasze wspomnienia 😊</p>
+  `;
+}
+
+/* ---------------- INIT ---------------- */
+
+startScreen();
 </script>
 
 </body>
 </html>
-
-
